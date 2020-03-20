@@ -19,7 +19,9 @@
     // Do any additional setup after loading the view.
     
     
-    
+//    [self test1];
+//    [self test3];
+    [self test2];
 }
 
 //NSThread
@@ -42,8 +44,47 @@
     }];
 }
 
-//NSOperation
+//GCD
 - (void)test2 {
+    //同步执行+并发队列
+    dispatch_queue_t queue1 = dispatch_queue_create("identifier", DISPATCH_QUEUE_CONCURRENT);
+    
+    dispatch_sync(queue1, ^{
+        NSLog(@"11111---%@",[NSThread currentThread]);
+    });
+    dispatch_sync(queue1, ^{
+        NSLog(@"22222---%@",[NSThread currentThread]);
+    });
+    
+    //同步执行+串行队列
+    dispatch_queue_t queue2 = dispatch_queue_create("identifier", DISPATCH_QUEUE_SERIAL);
+    
+    dispatch_sync(queue2, ^{
+        NSLog(@"33333---%@",[NSThread currentThread]);
+    });
+    dispatch_sync(queue2, ^{
+        NSLog(@"44444---%@",[NSThread currentThread]);
+    });
+    
+    //异步执行+并发队列
+    dispatch_async(queue1, ^{
+        NSLog(@"55555---%@",[NSThread currentThread]);
+    });
+    dispatch_async(queue1, ^{
+        NSLog(@"66666---%@",[NSThread currentThread]);
+    });
+    
+    //异步执行+串行队列
+    dispatch_async(queue2, ^{
+        NSLog(@"77777---%@",[NSThread currentThread]);
+    });
+    dispatch_async(queue2, ^{
+        NSLog(@"88888---%@",[NSThread currentThread]);
+    });
+}
+
+//NSOperation
+- (void)test3 {
     //都只会添加在当前线程中,并且默认同步执行,所以一般和队列一起使用
     
     //1,
@@ -72,7 +113,6 @@
     }
     [queue addOperation:blockOperation];
     queue.maxConcurrentOperationCount = 5;//当为 1 的时候表示串行队列,>1 表示并行队列
-    
     
 }
 
